@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('slug')->unique();
             $table->string('display_name');
-            $table->enum('provider', ['anthropic', 'openai', 'google', 'xai']);
+            $table->enum('provider', ['anthropic', 'openai', 'google', 'x-ai']);
             $table->decimal('input_price_per_mtok', 10, 4);
             $table->decimal('output_price_per_mtok', 10, 4);
             $table->boolean('is_active')->default(true);
