@@ -9,11 +9,11 @@ Route::inertia('/', 'Welcome')->name('home');
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
 
-    Route::get('conversations', [ConversationController::class, 'index']);
-    Route::post('conversations', [ConversationController::class, 'store']);
-    Route::get('conversations/{conversation}', [ConversationController::class, 'show']);
-    Route::post('conversations/{conversation}/messages', [MessageController::class, 'store']);
-    Route::post('conversations/{conversation}/messages/stream', [MessageController::class, 'stream']);
+    Route::get('conversations', [ConversationController::class, 'index'])->name('conversations.index');
+    Route::post('conversations', [ConversationController::class, 'store'])->name('conversations.store');
+    Route::get('conversations/{conversation}', [ConversationController::class, 'show'])->name('conversations.show');
+    Route::post('conversations/{conversation}/messages', [MessageController::class, 'store'])->name('conversations.messages.store');
+    Route::post('conversations/{conversation}/messages/stream', [MessageController::class, 'stream'])->name('conversations.messages.stream');
 });
 
 require __DIR__.'/settings.php';

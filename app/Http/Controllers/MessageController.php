@@ -99,6 +99,14 @@ class MessageController extends Controller
 
         $conversation->update(['active_leaf_message_id' => $userMessage->id]);
 
+        // Titre généré au premier message (fonctionnalité obligatoire) :
+        // simple troncature pour l'instant, pas besoin d'un appel LLM en plus.
+        if ($conversation->title === null) {
+            $conversation->update([
+                'title' => \Illuminate\Support\Str::limit($request->input('content'), 50),
+            ]);
+        }
+
         $model = AiModel::findOrFail($request->input('model_id'));
 
         $apiMessages = collect($conversation->activeThread())
