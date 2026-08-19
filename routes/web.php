@@ -13,6 +13,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('conversations', [ConversationController::class, 'store']);
     Route::get('conversations/{conversation}', [ConversationController::class, 'show']);
     Route::post('conversations/{conversation}/messages', [MessageController::class, 'store']);
+    Route::post('conversations/{conversation}/messages/stream', [MessageController::class, 'stream']);
 });
 
 require __DIR__.'/settings.php';
