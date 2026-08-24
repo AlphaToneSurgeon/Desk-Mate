@@ -139,13 +139,17 @@ async function sendMessage() {
             <div
                 v-for="(message, index) in messages"
                 :key="message.id ?? index"
-                class="max-w-2xl rounded-xl px-4 py-2"
-                :class="message.role === 'user' ? 'ml-auto bg-primary text-primary-foreground' : 'mr-auto bg-muted'"
+                class="max-w-2xl rounded-2xl px-4 py-2 shadow-sm"
+                :class="
+                    message.role === 'user'
+                        ? 'bg-brand-gradient ml-auto text-white'
+                        : 'mr-auto border border-chart-2/30 bg-chart-2/10'
+                "
             >
                 <div class="prose prose-sm dark:prose-invert" v-html="renderMarkdown(message.content)" />
             </div>
 
-            <div v-if="isStreaming" class="mr-auto max-w-2xl rounded-xl bg-muted px-4 py-2">
+            <div v-if="isStreaming" class="mr-auto max-w-2xl rounded-2xl border border-chart-2/30 bg-chart-2/10 px-4 py-2 shadow-sm">
                 <div class="prose prose-sm dark:prose-invert" v-html="renderMarkdown(streamingContent || '…')" />
             </div>
         </div>
@@ -158,7 +162,7 @@ async function sendMessage() {
                 class="flex-1 resize-none rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm focus-visible:ring-1 focus-visible:ring-ring focus-visible:outline-none"
                 @keydown.enter.exact.prevent="sendMessage"
             ></textarea>
-            <Button type="submit" :disabled="isStreaming">Envoyer</Button>
+            <Button type="submit" :disabled="isStreaming" class="bg-brand-gradient text-white hover:opacity-90">Envoyer</Button>
         </form>
     </div>
 </template>

@@ -22,11 +22,13 @@ const mainNavItems: NavItem[] = [
         title: 'Dashboard',
         href: dashboard(),
         icon: LayoutGrid,
+        iconColor: 'text-chart-4',
     },
     {
         title: 'Conversations',
         href: '/conversations',
         icon: MessageSquare,
+        iconColor: 'text-chart-2',
     },
 ];
 

@@ -113,7 +113,9 @@ class MessageController extends Controller
             ->map(fn ($msg) => ['role' => $msg->role, 'content' => $msg->content])
             ->toArray();
 
-        $systemPrompt = $conversation->custom_instructions ?? $conversation->user->custom_instructions;
+        $systemPrompt = $conversation->custom_instructions
+            ?? $conversation->user->custom_instructions
+            ?? config('assistant.default_system_prompt');
 
         if ($systemPrompt) {
             array_unshift($apiMessages, [
