@@ -14,6 +14,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('conversations/{conversation}', [ConversationController::class, 'show'])->name('conversations.show');
     Route::post('conversations/{conversation}/messages', [MessageController::class, 'store'])->name('conversations.messages.store');
     Route::post('conversations/{conversation}/messages/stream', [MessageController::class, 'stream'])->name('conversations.messages.stream');
+    Route::post('conversations/{conversation}/messages/{message}/regenerate', [MessageController::class, 'regenerate'])->name('conversations.messages.regenerate');
+    Route::patch('conversations/{conversation}/messages/{message}', [MessageController::class, 'updateMessage'])->name('conversations.messages.update');
 });
 
 require __DIR__.'/settings.php';

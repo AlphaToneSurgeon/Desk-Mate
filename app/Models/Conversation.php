@@ -22,22 +22,33 @@ class Conversation extends Model
         return $this ->belongsToMany(Tag::class,'conversation_tag');
     }
     public function activeThread(): array
-{
-    // Une seule requête pour toute la conversation : on évite le N+1
-    // qu'on aurait en remontant message par message avec une requête à chaque fois.
-    $messages = $this->messages()->get()->keyBy('id');
-
-    $thread = [];
-    $current = $messages->get($this->active_leaf_message_id);
-
-    while ($current) {
-        $thread[] = $current;
-        $current = $current->parent_message_id
-            ? $messages->get($current->parent_message_id)
-            : null;
+    {
+        return $this->threadEndingAt($this->active_leaf_message_id);
     }
 
-    // On a construit feuille → racine, l'affichage veut racine → feuille.
-    return array_reverse($thread);
-}
+    /**
+     * Comme activeThread(), mais en remontant depuis N'IMPORTE quel message
+     * de cette conversation plutôt que forcément la feuille active. Sert à
+     * reconstruire "l'historique tel qu'il était" au moment de régénérer une
+     * réponse ou de modifier un message plus haut dans l'arbre.
+     */
+    public function threadEndingAt(?int $leafMessageId): array
+    {
+        // Une seule requête pour toute la conversation : on évite le N+1
+        // qu'on aurait en remontant message par message avec une requête à chaque fois.
+        $messages = $this->messages()->get()->keyBy('id');
+
+        $thread = [];
+        $current = $leafMessageId ? $messages->get($leafMessageId) : null;
+
+        while ($current) {
+            $thread[] = $current;
+            $current = $current->parent_message_id
+                ? $messages->get($current->parent_message_id)
+                : null;
+        }
+
+        // On a construit feuille → racine, l'affichage veut racine → feuille.
+        return array_reverse($thread);
+    }
 }

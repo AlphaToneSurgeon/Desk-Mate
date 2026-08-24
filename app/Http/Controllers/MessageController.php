@@ -7,6 +7,7 @@ use App\Models\Conversation;
 use App\Models\Message;
 use App\Services\OpenRouterClient;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class MessageController extends Controller
@@ -36,21 +37,74 @@ class MessageController extends Controller
     {
         [$userMessage, $model, $apiMessages] = $this->prepare($request, $conversation);
 
-        return response()->stream(function () use ($model, $apiMessages, $conversation, $userMessage) {
+        return $this->streamAssistantReply($conversation, $userMessage->id, $model, $apiMessages);
+    }
+
+    /**
+     * Régénère la réponse assistant $message : crée un NOUVEAU message avec
+     * le même parent que $message (donc un frère), sans toucher à l'ancien.
+     * C'est le mécanisme de fork appliqué à "je n'aime pas cette réponse".
+     */
+    public function regenerate(Request $request, Conversation $conversation, Message $message): StreamedResponse
+    {
+        abort_if($conversation->user_id !== $request->user()->id, 403);
+        abort_unless($message->conversation_id === $conversation->id && $message->role === 'assistant', 404);
+
+        $model = $request->filled('model_id')
+            ? AiModel::findOrFail($request->input('model_id'))
+            : $message->model;
+
+        $apiMessages = $this->buildApiMessages($conversation, $message->parent_message_id);
+
+        return $this->streamAssistantReply($conversation, $message->parent_message_id, $model, $apiMessages);
+    }
+
+    /**
+     * "Modifie" le message utilisateur $message : crée un NOUVEAU message
+     * avec le même parent (un frère de $message), puis relance une réponse
+     * à partir de là. L'ancienne branche (avec l'ancienne question et sa
+     * réponse) reste intacte en base, juste plus affichée par défaut.
+     */
+    public function updateMessage(Request $request, Conversation $conversation, Message $message): StreamedResponse
+    {
+        abort_if($conversation->user_id !== $request->user()->id, 403);
+        abort_unless($message->conversation_id === $conversation->id && $message->role === 'user', 404);
+
+        $request->validate([
+            'content' => 'required|string',
+            'model_id' => 'required|exists:models,id',
+        ]);
+
+        $newUserMessage = Message::create([
+            'conversation_id' => $conversation->id,
+            'parent_message_id' => $message->parent_message_id,
+            'role' => 'user',
+            'content' => $request->input('content'),
+        ]);
+
+        $model = AiModel::findOrFail($request->input('model_id'));
+        $apiMessages = $this->buildApiMessages($conversation, $newUserMessage->id);
+
+        return $this->streamAssistantReply($conversation, $newUserMessage->id, $model, $apiMessages);
+    }
+
+    /**
+     * Cœur partagé par stream()/regenerate()/updateMessage() : appelle le
+     * LLM en streaming, relaie chaque fragment au navigateur, puis enregistre
+     * le message assistant complet et met à jour la feuille active.
+     */
+    private function streamAssistantReply(Conversation $conversation, ?int $parentMessageId, AiModel $model, array $apiMessages): StreamedResponse
+    {
+        return response()->stream(function () use ($model, $apiMessages, $conversation, $parentMessageId) {
             $result = (new OpenRouterClient())->streamMessage($model->slug, $apiMessages, function (string $delta) {
-                // Un événement SSE pour CE morceau de texte, envoyé tout de
-                // suite au navigateur (pas de buffering côté Laravel).
                 echo 'data: '.json_encode(['content' => $delta])."\n\n";
                 ob_flush();
                 flush();
             });
 
-            // Une fois le flux terminé, on enregistre le message complet
-            // en base — on ne pouvait pas le faire avant, on ne connaît le
-            // texte entier qu'à la fin du streaming.
             $assistantMessage = Message::create([
                 'conversation_id' => $conversation->id,
-                'parent_message_id' => $userMessage->id,
+                'parent_message_id' => $parentMessageId,
                 'model_id' => $model->id,
                 'role' => 'assistant',
                 'content' => $result['content'],
@@ -60,8 +114,6 @@ class MessageController extends Controller
 
             $conversation->update(['active_leaf_message_id' => $assistantMessage->id]);
 
-            // Dernier événement : on annonce au front que c'est fini, avec
-            // l'id du message pour qu'il puisse rafraîchir proprement si besoin.
             echo 'data: '.json_encode(['done' => true, 'message_id' => $assistantMessage->id])."\n\n";
             ob_flush();
             flush();
@@ -73,6 +125,30 @@ class MessageController extends Controller
             'X-Accel-Buffering' => 'no',
             'Connection' => 'keep-alive',
         ]);
+    }
+
+    /**
+     * Construit le tableau à envoyer à l'API à partir du fil se terminant à
+     * $leafMessageId, avec l'instruction système en tête si elle existe.
+     */
+    private function buildApiMessages(Conversation $conversation, ?int $leafMessageId): array
+    {
+        $apiMessages = collect($conversation->threadEndingAt($leafMessageId))
+            ->map(fn ($msg) => ['role' => $msg->role, 'content' => $msg->content])
+            ->toArray();
+
+        $systemPrompt = $conversation->custom_instructions
+            ?? $conversation->user->custom_instructions
+            ?? config('assistant.default_system_prompt');
+
+        if ($systemPrompt) {
+            array_unshift($apiMessages, [
+                'role' => 'system',
+                'content' => $systemPrompt,
+            ]);
+        }
+
+        return $apiMessages;
     }
 
     /**
@@ -103,26 +179,12 @@ class MessageController extends Controller
         // simple troncature pour l'instant, pas besoin d'un appel LLM en plus.
         if ($conversation->title === null) {
             $conversation->update([
-                'title' => \Illuminate\Support\Str::limit($request->input('content'), 50),
+                'title' => Str::limit($request->input('content'), 50),
             ]);
         }
 
         $model = AiModel::findOrFail($request->input('model_id'));
-
-        $apiMessages = collect($conversation->activeThread())
-            ->map(fn ($msg) => ['role' => $msg->role, 'content' => $msg->content])
-            ->toArray();
-
-        $systemPrompt = $conversation->custom_instructions
-            ?? $conversation->user->custom_instructions
-            ?? config('assistant.default_system_prompt');
-
-        if ($systemPrompt) {
-            array_unshift($apiMessages, [
-                'role' => 'system',
-                'content' => $systemPrompt,
-            ]);
-        }
+        $apiMessages = $this->buildApiMessages($conversation, $userMessage->id);
 
         return [$userMessage, $model, $apiMessages];
     }
