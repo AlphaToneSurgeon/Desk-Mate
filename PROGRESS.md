@@ -66,7 +66,7 @@ Mécanisme central : `Conversation::activeThread()` / `Conversation::threadEndin
 - **Jour 2** : `OpenRouterClient` (appel non-streamé), `ConversationController` + `MessageController` (CRUD, premier appel LLM)
 - **Jour 3** : streaming SSE (`OpenRouterClient::streamMessage`, `MessageController::stream`, `response()->stream()`), UI de chat Vue (`Show.vue`/`Index.vue`) avec lecture SSE côté client (`fetch` + `ReadableStream`), rendu Markdown (`marked` + `DOMPurify` pour la sécurité XSS)
 - **Jour 4** : rebrand complet LexBot → Desk Mate, thème coloré bleu/orange pour public jeune (`resources/css/app.css`), logo GraduationCap, personnalité par défaut pédagogique (`config/assistant.php` — "guide, ne donne jamais la réponse toute faite"), page de réglages "Instructions personnalisées" (`settings/Assistant.vue` + `AssistantController`)
-- **Jour 5 (en cours)** : ✅ fork de conversation terminé (régénérer une réponse / modifier un message = créent un frère en base, jamais de mutation). ✅ Tags terminés (créer, attacher/détacher via `syncWithoutDetaching`/`detach`, badges + menu déroulant sur `Conversations/Index.vue`). Reste à faire : dashboard coûts/tokens, tests Pest.
+- **Jour 5 (en cours)** : ✅ fork de conversation (régénérer/modifier = créent un frère en base). ✅ Tags (créer/attacher/détacher, N-N). ✅ Dashboard coûts/tokens (`DashboardController`, agrégation SQL groupée par modèle, remplace la page Dashboard placeholder). Reste à faire : tests Pest.
 
 ## Fonctionnalités obligatoires (éliminatoires) — TOUTES FAITES ✅
 
@@ -80,7 +80,7 @@ Mécanisme central : `Conversation::activeThread()` / `Conversation::threadEndin
 
 - ✅ **Fork/arbre de conversation** (régénérer + modifier, jour 5)
 - ✅ **Tags/dossiers** (créer/attacher/détacher, N-N)
-- ⬜ **Suivi coûts/tokens** — données déjà capturées (`messages.input_tokens`/`output_tokens`), pas de dashboard. Note : OpenRouter renvoie aussi un champ `cost` direct en USD dans `usage`, pas encore exploité.
+- ✅ **Suivi coûts/tokens** — dashboard avec agrégation SQL par modèle (`DashboardController`)
 - ⬜ Tests Pest — aucun écrit
 - ⬜ Partage de conversations — pas commencé
 - ⬜ Outils LLM (calculatrice, recherche...) — pas commencé
@@ -98,6 +98,5 @@ Mécanisme central : `Conversation::activeThread()` / `Conversation::threadEndin
 
 ## Prochaines étapes (dans l'ordre de priorité pour la grille de notation)
 
-1. **Dashboard coûts/tokens** — page avec agrégations SQL sur `messages.input_tokens`/`output_tokens` (utiliser aussi le champ `usage.cost` d'OpenRouter si pratique)
-2. **Tests Pest** — au moins sur les modèles (relations, `activeThread()`, mass assignment) pour les points bonus
-3. **Jour 6** : polish UI, nettoyage du repo, **push GitHub (public)**, rédaction rapport + cahier métacognitif (templates à récupérer sur la page consignes du cours), révision soutenance (questions théoriques : ORM, eager loading/N+1, migrations/seeders/factories, CASCADE, index, transactions, WebSockets vs SSE, Composition API)
+1. **Tests Pest** — au moins sur les modèles (relations, `activeThread()`, mass assignment) pour les points bonus
+2. **Jour 6** : polish UI, nettoyage du repo, **push GitHub (public)**, rédaction rapport + cahier métacognitif (templates à récupérer sur la page consignes du cours), révision soutenance (questions théoriques : ORM, eager loading/N+1, migrations/seeders/factories, CASCADE, index, transactions, WebSockets vs SSE, Composition API)
