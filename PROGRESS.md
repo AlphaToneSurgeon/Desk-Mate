@@ -66,7 +66,7 @@ Mécanisme central : `Conversation::activeThread()` / `Conversation::threadEndin
 - **Jour 2** : `OpenRouterClient` (appel non-streamé), `ConversationController` + `MessageController` (CRUD, premier appel LLM)
 - **Jour 3** : streaming SSE (`OpenRouterClient::streamMessage`, `MessageController::stream`, `response()->stream()`), UI de chat Vue (`Show.vue`/`Index.vue`) avec lecture SSE côté client (`fetch` + `ReadableStream`), rendu Markdown (`marked` + `DOMPurify` pour la sécurité XSS)
 - **Jour 4** : rebrand complet LexBot → Desk Mate, thème coloré bleu/orange pour public jeune (`resources/css/app.css`), logo GraduationCap, personnalité par défaut pédagogique (`config/assistant.php` — "guide, ne donne jamais la réponse toute faite"), page de réglages "Instructions personnalisées" (`settings/Assistant.vue` + `AssistantController`)
-- **Jour 5 (en cours)** : ✅ fork de conversation (régénérer/modifier = créent un frère en base). ✅ Tags (créer/attacher/détacher, N-N). ✅ Dashboard coûts/tokens (`DashboardController`, agrégation SQL groupée par modèle, remplace la page Dashboard placeholder). Reste à faire : tests Pest.
+- **Jour 5 — TERMINÉ** : ✅ fork de conversation (régénérer/modifier = créent un frère en base). ✅ Tags (créer/attacher/détacher, N-N). ✅ Dashboard coûts/tokens (`DashboardController`, agrégation SQL groupée par modèle). ✅ Tests Pest (46/46 passent — reconstruction du fil, autorisation, fork via `Http::fake()`).
 
 ## Fonctionnalités obligatoires (éliminatoires) — TOUTES FAITES ✅
 
@@ -81,7 +81,7 @@ Mécanisme central : `Conversation::activeThread()` / `Conversation::threadEndin
 - ✅ **Fork/arbre de conversation** (régénérer + modifier, jour 5)
 - ✅ **Tags/dossiers** (créer/attacher/détacher, N-N)
 - ✅ **Suivi coûts/tokens** — dashboard avec agrégation SQL par modèle (`DashboardController`)
-- ⬜ Tests Pest — aucun écrit
+- ✅ **Tests Pest** — `tests/Feature/ConversationThreadTest.php`, `ConversationAuthorizationTest.php`, `MessageForkTest.php` (46/46 passent, `php artisan test`)
 - ⬜ Partage de conversations — pas commencé
 - ⬜ Outils LLM (calculatrice, recherche...) — pas commencé
 
@@ -96,7 +96,14 @@ Mécanisme central : `Conversation::activeThread()` / `Conversation::threadEndin
 7. `defineOptions()` est hoisté hors du `setup()` → ne peut pas référencer `props`
 8. Laragon sur cette machine surveille `Web Dev\Projets`, pas `www` — vérifier avant de créer une jonction
 
-## Prochaines étapes (dans l'ordre de priorité pour la grille de notation)
+## Prochaines étapes
 
-1. **Tests Pest** — au moins sur les modèles (relations, `activeThread()`, mass assignment) pour les points bonus
-2. **Jour 6** : polish UI, nettoyage du repo, **push GitHub (public)**, rédaction rapport + cahier métacognitif (templates à récupérer sur la page consignes du cours), révision soutenance (questions théoriques : ORM, eager loading/N+1, migrations/seeders/factories, CASCADE, index, transactions, WebSockets vs SSE, Composition API)
+**Jour 6 (tout ce qui reste)** :
+- Polish UI (facultatif si le temps manque — le socle obligatoire + bonus sont déjà tous faits)
+- Nettoyage du repo (vérifier `.gitignore`, retirer les données de test, revoir les commits)
+- **Push GitHub (public)** — pas encore fait, obligatoire pour la remise
+- Rédaction du rapport PDF + cahier métacognitif d'usage de l'IA (templates à récupérer sur la page consignes du cours : `rapport_template_idv3.docx`, `cahier_metacognitif_idv3.docx`)
+- Révision soutenance orale (~15 min) : schéma/relations/intégrité, implémentation du streaming, choix techniques, difficultés rencontrées + 2 questions théoriques tirées au sort (ORM, eager loading/N+1, migrations/seeders/factories, contrainte d'intégrité référentielle/CASCADE, index, transaction, WebSockets vs SSE, Composition API)
+- Optionnel si temps disponible : partage de conversations, outils LLM (calculatrice, recherche)
+
+**État global** : les 4 fonctionnalités obligatoires + 3 fonctionnalités bonus (fork, tags, coûts) + tests sont fonctionnels et testés. Le projet est en bon état pour viser une note élevée ; l'essentiel du travail restant est administratif (rapport, cahier métacognitif, publication GitHub) plutôt que technique.
