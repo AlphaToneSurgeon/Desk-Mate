@@ -98,12 +98,12 @@ Mécanisme central : `Conversation::activeThread()` / `Conversation::threadEndin
 
 ## Prochaines étapes
 
-**Jour 6 (tout ce qui reste)** :
-- Polish UI (facultatif si le temps manque — le socle obligatoire + bonus sont déjà tous faits)
-- Nettoyage du repo (vérifier `.gitignore`, retirer les données de test, revoir les commits)
-- **Push GitHub (public)** — pas encore fait, obligatoire pour la remise
-- Rédaction du rapport PDF + cahier métacognitif d'usage de l'IA (templates à récupérer sur la page consignes du cours : `rapport_template_idv3.docx`, `cahier_metacognitif_idv3.docx`)
-- Révision soutenance orale (~15 min) : schéma/relations/intégrité, implémentation du streaming, choix techniques, difficultés rencontrées + 2 questions théoriques tirées au sort (ORM, eager loading/N+1, migrations/seeders/factories, contrainte d'intégrité référentielle/CASCADE, index, transaction, WebSockets vs SSE, Composition API)
+**Jour 6 (en cours)** :
+- ✅ **Push GitHub (public)** — fait : https://github.com/AlphaToneSurgeon/Desk-Mate (README complet ajouté)
+- ✅ **Rapport + cahier métacognitif** — rédigés à partir des templates officiels (récupérés sur SharePoint via les liens de la page consignes) et livrés en `.docx`/`.pdf` dans `C:\Users\adrit\Desktop\IFOSUP\livrables\`. Diagramme de classes UML généré (notation Merise) et intégré au rapport.
+  - ⬜ Reste à l'étudiant : insérer 2 captures d'écran réelles dans le rapport (marquées `[Capture d'écran à insérer]`), relire/personnaliser et **signer** le cahier métacognitif (c'est un brouillon honnête, pas un document à valider tel quel).
+- ⬜ Polish UI (facultatif — le socle obligatoire + bonus sont déjà tous faits)
+- ⬜ Révision soutenance orale (~15 min) : schéma/relations/intégrité, implémentation du streaming, choix techniques, difficultés rencontrées + 2 questions théoriques tirées au sort (ORM, eager loading/N+1, migrations/seeders/factories, contrainte d'intégrité référentielle/CASCADE, index, transaction, WebSockets vs SSE, Composition API)
 - Optionnel si temps disponible : partage de conversations, outils LLM (calculatrice, recherche)
 
-**État global** : les 4 fonctionnalités obligatoires + 3 fonctionnalités bonus (fork, tags, coûts) + tests sont fonctionnels et testés. Le projet est en bon état pour viser une note élevée ; l'essentiel du travail restant est administratif (rapport, cahier métacognitif, publication GitHub) plutôt que technique.
+**État global** : les 4 fonctionnalités obligatoires + 3 fonctionnalités bonus (fork, tags, coûts) + tests + repo public + rapport + cahier métacognitif sont tous faits. Il ne reste que des finitions côté étudiant (captures d'écran, relecture/signature du cahier) et la préparation de l'oral.
