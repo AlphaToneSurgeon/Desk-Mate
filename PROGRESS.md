@@ -100,10 +100,10 @@ Mécanisme central : `Conversation::activeThread()` / `Conversation::threadEndin
 
 **Jour 6 (en cours)** :
 - ✅ **Push GitHub (public)** — fait : https://github.com/AlphaToneSurgeon/Desk-Mate (README complet ajouté)
-- ✅ **Rapport + cahier métacognitif** — rédigés à partir des templates officiels (récupérés sur SharePoint via les liens de la page consignes) et livrés en `.docx`/`.pdf` dans `C:\Users\adrit\Desktop\IFOSUP\livrables\`. Diagramme de classes UML généré (notation Merise) et intégré au rapport.
-  - ⬜ Reste à l'étudiant : insérer 2 captures d'écran réelles dans le rapport (marquées `[Capture d'écran à insérer]`), relire/personnaliser et **signer** le cahier métacognitif (c'est un brouillon honnête, pas un document à valider tel quel).
+- ✅ **Rapport + cahier métacognitif** — complets, avec captures d'écran réelles de l'app intégrées (dashboard, conversations, sélecteur de modèle) et 4 captures illustrant la collaboration avec l'IA en section 7 du rapport. Cahier métacognitif relu, corrigé (2 coquilles), signé (nom + date). Livrés en `.docx`/`.pdf` dans `C:\Users\adrit\Desktop\IFOSUP\livrables\`.
+- ✅ **Guide de révision soutenance orale** — 12 questions probables sur le projet + les 8 questions théoriques officielles du cours avec réponses ancrées dans le code réel : https://claude.ai/code/artifact/0a634cb3-b22d-4cfd-8836-d048a7df2e9d
+- ✅ Lien "Repository" de la sidebar corrigé (pointait vers le starter kit Laravel, pointe maintenant vers le repo du projet)
 - ⬜ Polish UI (facultatif — le socle obligatoire + bonus sont déjà tous faits)
-- ⬜ Révision soutenance orale (~15 min) : schéma/relations/intégrité, implémentation du streaming, choix techniques, difficultés rencontrées + 2 questions théoriques tirées au sort (ORM, eager loading/N+1, migrations/seeders/factories, contrainte d'intégrité référentielle/CASCADE, index, transaction, WebSockets vs SSE, Composition API)
 - Optionnel si temps disponible : partage de conversations, outils LLM (calculatrice, recherche)
 
-**État global** : les 4 fonctionnalités obligatoires + 3 fonctionnalités bonus (fork, tags, coûts) + tests + repo public + rapport + cahier métacognitif sont tous faits. Il ne reste que des finitions côté étudiant (captures d'écran, relecture/signature du cahier) et la préparation de l'oral.
+**État global** : projet technique complet (4 fonctionnalités obligatoires + 3 bonus + tests), repo GitHub public à jour, rapport et cahier métacognitif finalisés et signés, guide de révision pour l'oral prêt. Il ne reste qu'à réviser avec le guide de révision avant la soutenance.
